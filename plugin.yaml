@@ -5,6 +5,9 @@ plugins:
     libcloud:
         executor: central_deployment_agent
         source: https://github.com/kemiz/cloudify-libcloud-plugin/archive/master.zip
+    diamond:
+      executor: host_agent
+      source: https://github.com/cloudify-cosmo/cloudify-diamond-plugin/archive/1.2.1.zip
 
 relationships:
   cloudify.libcloud.server_connected_to_floating_ip:
