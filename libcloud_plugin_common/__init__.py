@@ -209,23 +209,30 @@ def _get_connection_config(ctx):
     service_port = config_service['service_port']
     cloud_id = config_service['cloud_id']
     try:
-        ctx.logger.info("Attempting to get 'connection_config' from 'runtime_properties'")
-        connection_config = ctx.instance.runtime_properties['connection_config']
-        return connection_config
-    except KeyError:
-        ctx.logger.info(
-            'No connection_config in runtime_properties, Getting provider configuration from external service: '
-            'http://{0}:{1}'.format(service_url, service_port))
-        connection_config = yaml.load(
-            config_service_client.get_cloud_by_id(
-                cloud_id=cloud_id,
-                service_base_url=service_url,
-                port=service_port
-            ).content
-        )
-        ctx.logger.info("Storing 'connection_config' in 'runtime_properties'")
+        ctx.logger.info("Attempting to get 'connection_config' from 'node properties'")
+        connection_config = ctx.node.properties['connection_config']
         ctx.instance.runtime_properties['connection_config'] = connection_config
         return connection_config
+    except KeyError:
+        ctx.logger.info("Didn't find anything in node properties...")
+        ctx.logger.info("Attempting to get 'connection_config' from 'runtime_properties'")
+        try:
+            connection_config = ctx.instance.runtime_properties['connection_config']
+            return connection_config
+        except KeyError:
+            ctx.logger.info(
+                'No connection_config in runtime_properties, Getting provider configuration from external service: '
+                'http://{0}:{1}'.format(service_url, service_port))
+            connection_config = yaml.load(
+                config_service_client.get_cloud_by_id(
+                    cloud_id=cloud_id,
+                    service_base_url=service_url,
+                    port=service_port
+                ).content
+            )
+            ctx.logger.info("Storing 'connection_config' in 'runtime_properties'")
+            ctx.instance.runtime_properties['connection_config'] = connection_config
+            return connection_config
 
 
 def with_server_client(f):
