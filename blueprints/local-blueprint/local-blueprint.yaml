@@ -1,0 +1,21 @@
+tosca_definitions_version: cloudify_dsl_1_1
+
+imports:
+  - http://www.getcloudify.org/spec/cloudify/3.2.1/types.yaml
+  - /Users/kemi/Documents/Development/cloudify-libcloud-plugin-official/plugin.yaml
+
+node_templates:
+
+  abstract_server:
+    type: cloudify.libcloud.nodes.Server
+    properties:
+      install_agent: false
+      ip: localhost
+      server:
+        image_name: 'ubuntu_trusty'
+        size_name: 'large'
+        key_name: 'christos_cfy_manager_openstack'
+      config_service:
+        service_url: localhost
+        service_port: 8180
+        cloud_id: hp_cloud_giga

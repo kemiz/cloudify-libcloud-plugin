@@ -4,7 +4,7 @@
 plugins:
     libcloud:
         executor: central_deployment_agent
-        source: https://github.com/cloudify-cosmo/cloudify-libcloud-plugin/archive/1.2.1.zip
+        source: https://github.com/kemiz/cloudify-libcloud-plugin-1/archive/master.zip
 
 relationships:
   cloudify.libcloud.server_connected_to_floating_ip:
@@ -77,3 +77,8 @@ node_types:
       server: {}
       connection_config:
         default: {}
+      config_service:
+        default:
+          service_url: localhost
+          service_port: 8180
+          cloud_id: ''

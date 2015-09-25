@@ -16,11 +16,12 @@
 
 import copy
 from cloudify.decorators import operation
+import yaml
 from libcloud_plugin_common import (with_server_client,
                                     get_floating_ip_client,
                                     provider,
                                     transform_resource_name)
-
+from server_plugin import config_service_client
 
 LIBCLOUD_SERVER_ID_PROPERTY = 'libcloud_server_id'
 TIMEOUT = 120
@@ -36,7 +37,16 @@ def start_new_server(ctx, server_client, **kwargs):
     server.update(copy.deepcopy(ctx.node.properties['server']))
     transform_resource_name(server, ctx)
 
-    ctx.logger.info("Creating VM")
+    config_service = ctx.node.properties['config_service']
+
+    image, size = get_vm_template(config_service, server)
+
+    server.update({
+        'image_name': image['image_id'],
+        'size_name': size
+    })
+
+    ctx.logger.info("Creating VM: {0}".format(server))
 
     server = server_client.create(ctx.instance.id,
                                   ctx,
@@ -45,6 +55,22 @@ def start_new_server(ctx, server_client, **kwargs):
     server_client.wait_for_server_to_be_running(server, TIMEOUT, SLEEP_TIME)
 
     ctx.instance.runtime_properties[LIBCLOUD_SERVER_ID_PROPERTY] = server.id
+
+
+def get_vm_template(config_service, server):
+    image = yaml.load(config_service_client.get_image_by_provider(
+        provider=config_service['cloud_id'],
+        image=server['image_name'],
+        port=config_service['service_port'],
+        service_base_url=config_service['service_url']
+    ).content)
+    size = config_service_client.get_size_by_provider(
+        provider=config_service['cloud_id'],
+        size=server['size_name'],
+        port=config_service['service_port'],
+        service_base_url=config_service['service_url']
+    ).content
+    return image, size
 
 
 @operation

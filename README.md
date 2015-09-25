@@ -1,8 +1,10 @@
-cloudify-libcloud-plugin
-========================
+# Cloudify libcloud plugin
 
-Cloudify (EC2) Libcloud plugin
+A Cloudify libecloud provider plugin that allows cross-cloud blueprint compatibility.
 
-## Usage
 
-Reference link will be provided soon.
+### Supported & Tested Provider Matrix
+| Provider  | Compute  | Storage | Keypairs | Sec. Groups | Network| Floating IP |
+| :-------- | :------: | :-----: | :-----: | :-----: | :-----: | :-----: | 
+|  HP Cloud | Yes | Yes | No | No | No | No |          
+| Amazon AWS | Yes |   Yes | No | No | No | No |
